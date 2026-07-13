@@ -1,0 +1,32 @@
+{
+  "name": "guided-review",
+  "version": "0.1.0",
+  "description": "Turn Git diffs into agent-authored, reviewer-first guided tours",
+  "type": "module",
+  "private": false,
+  "bin": {
+    "guided-review": "./src/cli.ts"
+  },
+  "files": [
+    "src",
+    "schemas",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check": "bun test && tsc -p tsconfig.json --noEmit",
+    "browser:smoke": "bun run scripts/browser-smoke.ts"
+  },
+  "engines": {
+    "bun": ">=1.2.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.9.0"
+  },
+  "license": "MIT"
+}

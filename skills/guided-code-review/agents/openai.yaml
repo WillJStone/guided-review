@@ -1,0 +1,4 @@
+interface:
+  display_name: "Guided Code Review"
+  short_description: "Turn a raw diff into an agent-authored review tour"
+  default_prompt: "Use $guided-code-review to explain and open my current changes as a guided review."
