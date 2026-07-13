@@ -1,4 +1,4 @@
-import { access, chmod, mkdir, readFile } from "node:fs/promises";
+import { access, chmod, mkdir, readFile, realpath } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -41,10 +41,23 @@ function pathInside(parent: string, candidate: string): string | null {
   return null;
 }
 
+async function canonicalPath(candidate: string): Promise<string> {
+  let existing = path.resolve(candidate);
+  const suffix: string[] = [];
+  while (!(await exists(existing))) {
+    const parent = path.dirname(existing);
+    if (parent === existing) return path.resolve(candidate);
+    suffix.unshift(path.basename(existing));
+    existing = parent;
+  }
+  return path.join(await realpath(existing), ...suffix);
+}
+
 async function assertOutputSafe(repo: string, outputDirectory: string, allowUnignored: boolean): Promise<void> {
-  const relative = pathInside(repo, outputDirectory);
+  const [canonicalRepo, canonicalOutput] = await Promise.all([realpath(repo), canonicalPath(outputDirectory)]);
+  const relative = pathInside(canonicalRepo, canonicalOutput);
   if (relative === null || allowUnignored) return;
-  const status = Bun.spawnSync(["git", "check-ignore", "--quiet", "--", relative], { cwd: repo }).exitCode;
+  const status = Bun.spawnSync(["git", "check-ignore", "--quiet", "--", relative], { cwd: canonicalRepo }).exitCode;
   if (status !== 0) {
     throw new GuidedReviewError(
       `output is inside the reviewed repository but is not ignored: ${outputDirectory}\nUse an ignored path or pass --allow-unignored-output explicitly.`,

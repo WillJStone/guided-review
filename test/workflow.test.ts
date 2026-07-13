@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { readFile, unlink, writeFile } from "node:fs/promises";
+import { readFile, symlink, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { presentationDiff } from "../src/render";
@@ -39,6 +39,25 @@ describe("review workflow", () => {
         allowSensitive: false,
         allowUnignoredOutput: false,
         outputDirectory: path.join(repo, ".guided-review"),
+      }),
+    ).rejects.toThrow("is not ignored");
+  });
+
+  test("refuses unignored output when the repository path uses a filesystem alias", async () => {
+    const repo = await createFixtureRepo();
+    const alias = `${repo}-alias`;
+    garbage.push(repo, alias);
+    await symlink(repo, alias, process.platform === "win32" ? "junction" : "dir");
+    await writeFile(path.join(alias, "alpha.txt"), "changed\n", "utf8");
+    await expect(
+      snapshotWorkflow({
+        repo: alias,
+        committedOnly: false,
+        includeUntracked: true,
+        excludes: [],
+        allowSensitive: false,
+        allowUnignoredOutput: false,
+        outputDirectory: path.join(alias, ".guided-review"),
       }),
     ).rejects.toThrow("is not ignored");
   });
