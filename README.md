@@ -11,7 +11,7 @@ The CLI is deterministic and local. It does not call a model, upload code, or mu
 - Optional: Codex for the bundled authoring workflow
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/WillJStone/guided-review.git
 cd guided-review
 bun link
 guided-review --help
