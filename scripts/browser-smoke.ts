@@ -55,6 +55,9 @@ for (const viewport of ["1440,1000", "390,844"]) {
   }
   if (!dom.includes('data-horizontal-overflow="false"')) throw new Error(`review overflowed horizontally at ${viewport}`);
   if (!dom.includes('data-render-errors="0"')) throw new Error(`review raised a page error at ${viewport}`);
+  if (!dom.includes('data-theme-switch="true"')) throw new Error(`theme switching failed at ${viewport}`);
+  if (!dom.includes('data-section-collapse="true"')) throw new Error(`section collapsing failed at ${viewport}`);
+  if (!dom.includes('data-reviewed-collapse="true"')) throw new Error(`reviewed sections did not collapse and reopen at ${viewport}`);
   if (!dom.includes('data-unicode-artifacts="0"')) throw new Error(`review displayed a Unicode escape artifact at ${viewport}`);
   if (!dom.includes('class="step"')) throw new Error(`review rendered no guided stages at ${viewport}`);
   if (!dom.includes('class="file-card')) throw new Error(`review rendered no file diffs at ${viewport}`);
